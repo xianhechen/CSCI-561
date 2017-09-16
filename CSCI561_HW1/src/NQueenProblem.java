@@ -1,242 +1,398 @@
-//import java.io.BufferedReader;
-//import java.io.FileReader;
-//import java.io.IOException;
-//
-///* Java program to solve N Queen Problem using
-//   backtracking */
-//public class NQueenProblem
-//{
-//    final int N = 2;
-//    int queens_placed = 0;
-//
-//    /* A utility function to print solution */
-//    void printSolution(int board[][])
-//    {
-//        for (int i = 0; i < 8; i++)
-//        {
-//            for (int j = 0; j < 8; j++)
-//                System.out.print(" " + board[i][j]
-//                        + " ");
-//            System.out.println();
-//        }
-//    }
-//
-//    /* A utility function to check if a queen can
-//       be placed on board[row][col]. Note that this
-//       function is called when "col" queens are already
-//       placeed in columns from 0 to col -1. So we need
-//       to check only left side for attacking queens */
-//    boolean isSafe(int board[][], int row, int col)
-//    {
-//        int i, j;
-//        boolean row_left_tree = false;
-//        boolean col_upper_tree = false;
-//        boolean upper_left_diag = false;
-//        boolean lower_left_diag = false;
-//
-//        /* Check this row on left side */
-//        for (i = col; i >= 0; i--)
-//            if (board[row][i] == 2)
-//                row_left_tree = true;
-//            else if (board[row][i] == 1)
-//                if (row_left_tree == false)
-//                    return false;
-//
-//        /* Check this column on upper side */
-//        for (i = row; i >= 0; i--)
-//            if (board[i][col] == 2)
-//                col_upper_tree = true;
-//            else if (board[i][col] == 1)
-//                if (col_upper_tree == false)
-//                    return false;
-//
-//
-//        /* Check upper diagonal on left side */
-//        for (i=row, j=col; i>=0 && j>=0; i--, j--)
-//            if (board[i][j] == 2)
-//                upper_left_diag = true;
-//            else if (board[i][j] == 1)
-//                if (upper_left_diag == false)
-//                    return false;
-//
-//        /* Check lower diagonal on left side */
-//        for (i=row, j=col; j>=0 && i<8; i++, j--)
-//            if (board[i][j] == 2)
-//                lower_left_diag = true;
-//            else if (board[i][j] == 1)
-//                if (lower_left_diag == false)
-//                    return false;
-//
-//        return true;
-//    }
-//
-//
-//    /*
-//
-//
-//        boolean isSafe(int board[][], int row, int col)
-//        {
-//            int i, j;
-//            int row_left_tree, upper_left_diag, lower_left_diag;
-//
-//            for (i = 0; i < col; i++)
-//            if (board[row][i] == 1)
-//            return false;
-//
-//
-//            for (i=row, j=col; i>=0 && j>=0; i--, j--)
-//            if (board[i][j] == 1)
-//            return false;
-//
-//
-//            for (i=row, j=col; j>=0 && i<6; i++, j--)
-//            if (board[i][j] == 1)
-//            return false;
-//
-//            return true;
-//        } */
-//
-//
-//
-//
-//
-//
-//
-////
-////    /* A recursive utility function to solve N
-////       Queen problem */
-////    boolean solveNQUtil(int board[][], int col)
-////    {
-////        /* base case: If all queens are placed
-//////           then return true */
-////        if (queens_placed >= N)
-////            return true;
-////        if (col >= 8)
-////            return true;
-////
-////        /* Consider this column and try placing
-////           this queen in all rows one by one */
-////        for (int i = 0; i < 8; i++)
-////        {
-////            /* Check if queen can be placed on
-////               board[i][col] */
-////            if (board[i][col] == 2) {
-////                continue;
-////            }
-////            if (board[i][col] != 2 && isSafe(board, i, col))
-////            {
-////                /* Place this queen in board[i][col] */
-////                board[i][col] = 1;
-////                queens_placed += 1;
-////
-//////                /* recur to place rest of the queens */
-////
-////
-////
-////                if (solveNQUtil(board, col + 1) == true) {
-////                    return true;
-////                }
-////                board[i][col] = 0; // BACKTRACK
-////                queens_placed -= 1;
-////
-////
-////
-//////
-//////
-//////                /* If placing queen in board[i][col]
-//////                   doesn't lead to a solution then
-//////                   remove queen from board[i][col] */
-//////
-////
-////            }
-////        }
-////
-////
-////        /* If queen can not be place in any row in
-////           this column col, then return false */
-////        return false;
-////    }
-//
-//    /* This function solves the N Queen problem using
-//       Backtracking.  It mainly uses  solveNQUtil() to
-//       solve the problem. It returns false if queens
-//       cannot be placed, otherwise return true and
-//       prints placement of queens in the form of 1s.
-//       Please note that there may be more than one
-//       solutions, this function prints one of the
-//       feasible solutions.*/
-//    boolean solveNQ(String method, int size, int lizards, int nursery[][])
-//    {
-//        int board[][] = nursery;
-//
-//        if (solveNQUtil(board, 0, 0) == false)
-//        {
-//            System.out.print("Solution does not exist");
-//
-//            return false;
-//        }
-//
-//        printSolution(board);
-//        return true;
-//    }
-//
-//    // driver program to test above function
-//    public static void main(String args[])
-//    {
-//
-//        String method = "";
-//        int size = 0;
-//        int lizards = 0;
-//
-//
-//
-//        int nursery[][] = {{0, 0, 0, 0, 0, 0, 0, 0},
-//                {0, 0, 0, 0, 0, 0, 0, 0},
-//                {0, 0, 0, 0, 0, 0, 0, 0},
-//                {0, 0, 0, 0, 2, 0, 0, 0},
-//                {0, 0, 0, 0, 0, 0, 0, 0},
-//                {0, 0, 0, 0, 0, 2, 0, 0},
-//                {0, 0, 0, 0, 0, 0, 0, 0},
-//                {0, 0, 0, 0, 0, 0, 0, 0}};
-//
-//        int line_number = 0;
-//
-//
-//        try {
-//            BufferedReader in = new BufferedReader(new FileReader("input.txt"));
-//            String str;
-//            while ((str = in.readLine()) != null) {
-//                line_number ++;
-//                if (line_number == 1) {
-//                    method = str;
-//                }
-//                else if (line_number == 2) {
-//                    size = Integer.valueOf(str);
-//                }
-//                else if (line_number == 3) {
-//                    lizards = Integer.valueOf(str);
-//                }
-//                else {
-//                    // System.out.println(str);
-//                    // store the nursery as a matrix?
-//
-//                }
+import sun.misc.Queue;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+
+public class NQueenProblem {
+
+    public static String method = "";
+    public static int size = 0;
+    public static int lizards = 0;
+
+    public static int line_number = 1;
+    public static int[][] result;
+    public static int[][] new_lizards_locations;
+
+    public static int[][] lizards_locations;
+    public static double currentSystemTemperature = 30.0;
+    public static double freezingTemperature = 0.0;
+    public static double currentStabilizer = 5.0;
+    public static double currentSystemEnergy = 0.0;
+    public static double coolingFactor = 0.05;
+    public static double stabilizingFactor = 1.08;
+
+
+    class Root {
+        int[][] board;
+        private int depth;
+        private int length;
+        private int lizard_num;
+
+
+        // point initialized from parameters
+        Root(int[][] board, int depth, int length, int lizard_num) {
+            this.board = board;
+            this.depth = depth;
+            this.length = length;
+            this.lizard_num = lizard_num;
+        }
+
+        // accessor methods
+        public int[][] board() { return board; }
+        public int depth() { return depth; }
+        public int length() { return length; }
+        public int lizard_num() { return lizard_num; }
+    }
+
+    int[][] deepCopy(int[][] A) {
+        int[][] B = new int[A.length][A[0].length];
+        for (int x = 0; x < A.length; x++) {
+            for (int y = 0; y < A[0].length; y++) {
+                if (A[x][y] != 0) { //write only when necessary
+                    B[x][y] = A[x][y];
+                }
+            }
+        }
+        return B;
+    }
+
+
+    boolean isSafe(int[][] board, int y, int x) {
+        // up
+        for (int i = y; i >= 0; i--) {
+            if (board[i][x] == 1) {
+                return false;
+            }
+            if (board[i][x] == 2) {
+                break;
+            }
+        }
+
+        // down
+        for (int i = y; i != board.length; i++) {
+            if (board[i][x] == 1) {
+                return false;
+            }
+            if (board[i][x] == 2) {
+                break;
+            }
+        }
+
+        // left
+        for (int i = x; i >= 0; i--) {
+            if (board[y][i] == 1) {
+                return false;
+            }
+            if (board[y][i] == 2) {
+                break;
+            }
+        }
+
+        // right
+        for (int i = x; i != board.length; i++ ) {
+            if (board[y][i] == 1) {
+                return false;
+            }
+            if (board[y][i] == 2) {
+                break;
+            }
+
+        }
+
+        //left up
+        for (int i = 0; i <= Math.min(y,x); i++) {
+            if (board[y-i][x-i] == 1) {
+                return false;
+            }
+            if (board[y-i][x-i] == 2) {
+                break;
+            }
+        }
+
+        //left down
+        for (int i = 0; i!=Math.min(board.length-1-y,x)+1; i++) {
+            if (board[y+i][x-i] == 1) {
+                return false;
+            }
+            if (board[y+i][x-i] == 2) {
+                break;
+            }
+        }
+
+        //right up
+        for (int i = 0; i != Math.min(y, board[0].length -1 -x)+1; i++) {
+            if (board[y-i][x+i] == 1) {
+                return false;
+            }
+            if (board[y-i][x+i] == 2) {
+                break;
+            }
+        }
+
+        //right down
+        for (int i = 0; i!= Math.min(board.length-1-y, board[0].length-1-x)+1; i++) {
+            if (board[y+i][x+i] == 1) {
+                return false;
+            }
+            if (board[y+i][x+i] == 2) {
+                break;
+            }
+        }
+        return true;
+    }
+
+
+    // flip the coin function
+    boolean probability(double temperature, double delta) {
+        System.out.println("6");
+        if (delta < 0) {
+            return true;
+        }
+        double E = Math.exp(-delta / temperature);
+        double R = Math.random();
+        if (R < E) {
+            return true;
+        }
+        return false;
+    }
+
+    // number of conflicts needs to be as small as possible
+    int countConflicts(int [][] board) {
+        System.out.println("5");
+        int conflicts = 0;
+        for (int row = 0; row != board.length; row++) {
+            for (int col = 0; col != board[row].length; col++) {
+                if (board[row][col] == 1) {
+                    board[row][col] = 0;
+                    if (!isSafe(board, row, col)) {
+//                        System.out.println("conflicting row: "+row+" col: "+col+" safe: "+isSafe(board, row, col));
+                        conflicts++;
+                        board[row][col] = 1;
+                    }
+                    board[row][col] = 1;
+
+                }
+            }
+        }
+        return conflicts;
+    }
+
+    // generates random lizard locations
+    void randomPositionsGenerator() {
+        System.out.println("4");
+        for (int i = 0; i < lizards; i++) {
+            int row = 0;
+            int col = 0;
+            int[] random_position = randomPositionGenerator();
+            row = random_position[0];
+            col = random_position[1];
+
+            while (result[row][col] != 0) {
+                //generate again
+                random_position = randomPositionGenerator();
+                row = random_position[0];
+                col = random_position[1];
+            }
+
+            lizards_locations[i][0] = row;
+            lizards_locations[i][1] = col;
+            result[row][col] = 1;
+        }
+    }
+
+    // generates random lizard location
+    int[] randomPositionGenerator() {
+        // generate random numbers between 1 and size number
+        int row = (int )(Math.random() * (size-1) + 0);
+        int col = (int )(Math.random() * (size-1) + 0);
+        return new int[] {row, col};
+    }
+
+
+    int[][] generateNeighbor(int[][] board) {
+        // take our current board, take a random queen, make a single step.
+        // need a list of lizards to track all lizards' locations
+        // take a random lizard
+        int changingLizard = (int)(Math.random() * (lizards-1) + 0);
+
+        // current lizards
+        new_lizards_locations = deepCopy(lizards_locations);
+
+        boolean repetitions = true;
+        while (repetitions) {
+            int old_row = new_lizards_locations[changingLizard][0];
+            int old_col = new_lizards_locations[changingLizard][1];
+            System.out.println("2");
+            new_lizards_locations[changingLizard][0] = (new_lizards_locations[changingLizard][0] + ((int)(Math.random() * (size - 1))) )% size;
+            new_lizards_locations[changingLizard][1] = (new_lizards_locations[changingLizard][1] + ((int)(Math.random() * (size - 1))) )% size;
+//            System.out.println("row: "+new_lizards_locations[changingLizard][0]+"col: "+new_lizards_locations[changingLizard][1]);
+            int new_row = new_lizards_locations[changingLizard][0];
+            int new_col = new_lizards_locations[changingLizard][1];
+            if (result[new_row][new_col] == 0) {
+                result[old_row][old_col] = 0;
+                result[new_row][new_col] = 1;
+                repetitions = false;
+            } else {
+                new_lizards_locations[changingLizard][0] = old_row;
+                new_lizards_locations[changingLizard][1] = old_col;
+            }
+
+        }
+        for (int[] row : lizards_locations)
+        {
+            System.out.println(Arrays.toString(row));
+        }
+        System.out.println("___________________________");
+        for (int[] row : new_lizards_locations)
+        {
+            System.out.println(Arrays.toString(row));
+        }
+        return board;
+    }
+
+    void acceptNext() {
+        System.out.println("3");
+        for (int row = 0; row != result.length; row++) {
+            for (int col = 0; col != result[row].length; col++) {
+                if (result[row][col] == 1) {
+                    result[row][col] = 0;
+                }
+            }
+        }
+//        System.out.println("size: "+new_lizards_locations.length);
+        for (int i = 0; i < lizards; i++) {
+            //lizards_locations[i] = new int[]{new_lizards_locations[i][0], new_lizards_locations[i][1]};
+//            result[lizards_locations[i][0]][lizards_locations[i][1]] = 0;
+            result[new_lizards_locations[i][0]][new_lizards_locations[i][1]] = 1;
+        }
+    }
+
+
+    boolean simulatedAnnealing() {
+        //while (currentSystemTemperature > freezingTemperature) {
+//            double newEnergy = generateNext(),
+//                    energyDelta = newEnergy - currentSystemEnergy;
+//            if (probability(currentSystemTemperature, energyDelta)) {
+//                acceptNext();
+//                currentSystemEnergy = newEnergy;
 //            }
-//            System.out.println(method);
-//            System.out.println(size);
-//            System.out.println(lizards);
+//            currentSystemTemperature = currentSystemTemperature - coolingFactor;
+//            currentStabilizer = currentStabilizer * stabilizingFactor;
+        return false;
+    }
+
 //
-//            in.close();
-//        } catch (IOException e) {
-//        }
-//
-//
-//
-//
-//        NQueenProblem Queen = new NQueenProblem();
-//        Queen.solveNQ(method, size, lizards, nursery);
-//
-//
-//
-//    }
-//}
+//    simulated-annealing(initial solution)
+//    let solution be initial
+//    let t be an initial temperature
+//    until t is almost zero
+//          let neighbor be a random neighbor of solution
+//          if the cost of neighbor is less than the cost of solution
+//              let solution be neighbor
+//              stop if the cost is now 0
+//          otherwise
+//              let c be the cost increase
+//              compute p = e^(-c/t)
+//              with probability p, let solution be neighbor
+//          multiply t by a decay rate
+//     return solution
+
+
+    public static void main(String args[]) throws IOException, InterruptedException {
+
+//        int[][] initial_map = new int[][];
+        int[][] initial_map = new int[0][];
+
+        try {
+            BufferedReader in = new BufferedReader(new FileReader("input.txt"));
+            String str;
+            while ((str = in.readLine()) != null) {
+
+                if (line_number == 1) {
+                    method = str;
+                }
+                else if (line_number == 2) {
+                    size = Integer.valueOf(str);
+                    initial_map = new int[size][size];
+                }
+                else if (line_number == 3) {
+                    lizards = Integer.valueOf(str);
+                }
+                else {
+                    // store the nursery as a matrix?
+                    for (int i = 0; i != size; i++) {
+                        initial_map[line_number-4][i] = Integer.parseInt(str.valueOf(str.charAt(i)));
+                    }
+                }
+                line_number ++;
+            }
+            System.out.println(method);
+            System.out.println(size);
+            System.out.println(lizards);
+            in.close();
+        } catch (IOException e) {
+        }
+
+//        initial_map[3][4] = 2;
+//        initial_map[5][5] = 2;
+
+        result = initial_map;
+        for (int[] row : initial_map)
+        {
+            System.out.println(Arrays.toString(row));
+        }
+
+        System.out.println("____________________________");
+
+        NQueenProblem hw = new NQueenProblem();
+
+
+
+        if (method.equals("SA")) {
+//            result = hw.simulatedAnnealing();
+            lizards_locations = new int[lizards][2];
+            hw.randomPositionsGenerator();
+            for (int[] row : result)
+            {
+                System.out.println(Arrays.toString(row));
+            }
+
+            boolean i = hw.simulatedAnnealing();
+            System.out.println(i);
+
+
+
+            for (int[] row : result)
+            {
+                System.out.println(Arrays.toString(row));
+            }
+
+
+
+        }
+
+        try{
+            PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
+            writer.println(method);
+            writer.println(size);
+            writer.println(lizards);
+            for (int[] row : result)
+            {
+                String result_row = "";
+                for (int i = 0; i != row.length; i++) {
+                    result_row += row[i];
+                }
+                writer.println(result_row);
+            }
+            writer.close();
+        } catch (IOException e) {
+
+        }
+
+    }
+
+}
+
