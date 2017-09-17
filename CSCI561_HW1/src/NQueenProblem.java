@@ -14,16 +14,13 @@ public class NQueenProblem {
 
     public static int line_number = 1;
     public static int[][] result;
-    public static int[][] backup;
     public static int[][] new_lizards_locations;
     public static int[][] lizards_locations;
     public static double currentSystemTemperature = 10.0;
     public static int currConflicts = 0;
     public static int nextConflicts = 0;
 
-
     public static int old_row, old_col, new_row, new_col, changingLizard;
-
 
     int[][] deepCopy(int[][] A) {
         int[][] B = new int[A.length][A[0].length];
@@ -123,16 +120,13 @@ public class NQueenProblem {
     }
 
 
-
-
     // flip the coin function
     boolean probability(double temperature, double delta) {
 //        System.out.println("6");
-        if (delta < 0) {
-            return true;
-        }
-        double E = Math.exp(-delta / temperature);
+        double E = Math.exp((-1)*delta / temperature);
         double R = Math.random();
+//        System.out.println(E);
+//        System.out.println(R);
         if (R < E) {
             return true;
         }
@@ -158,21 +152,59 @@ public class NQueenProblem {
     // generates random lizard locations
     void randomPositionsGenerator() {
 //        System.out.println("4");
-        for (int i = 0; i < lizards; i++) {
-            int row = 0;
-            int col = 0;
-            int[] random_position = randomPositionGenerator();
-            row = random_position[0];
-            col = random_position[1];
-            while (result[row][col] != 0) {
-                random_position = randomPositionGenerator();
-                row = random_position[0];
-                col = random_position[1];
+        if (size == 4) {
+//            lizards_locations[0][0] = 0;
+//            lizards_locations[0][1] = 0;
+//            lizards_locations[1][0] = 1;
+//            lizards_locations[1][1] = 0;
+//            lizards_locations[2][0] = 1;
+//            lizards_locations[2][1] = 2;
+//            lizards_locations[3][0] = 2;
+//            lizards_locations[3][1] = 0;
+//            result[0][0] = 1;
+//            result[1][0] = 1;
+//            result[1][2] = 1;
+//            result[2][0] = 1;
+
+            for (int i = 0; i < lizards; i++) {
+                int row = 0;
+                int col = 0;
+                int[] random_position;
+                boolean repetition = true;
+                while (repetition) {
+                    random_position = randomPositionGenerator();
+                    row = random_position[0];
+                    col = random_position[1];
+                    if (result[row][col] == 0) {
+                        repetition = false;
+                    }
+                }
+                lizards_locations[i][0] = row;
+                lizards_locations[i][1] = col;
+                result[row][col] = 1;
             }
-            lizards_locations[i][0] = row;
-            lizards_locations[i][1] = col;
-            result[row][col] = 1;
         }
+        else {
+            for (int i = 0; i < lizards; i++) {
+                int row = 0;
+                int col = 0;
+                int[] random_position;
+                boolean repetition = true;
+                while (repetition) {
+                    random_position = randomPositionGenerator();
+                    row = random_position[0];
+                    col = random_position[1];
+                    if (result[row][col] == 0) {
+                        repetition = false;
+                    }
+                }
+                lizards_locations[i][0] = row;
+                lizards_locations[i][1] = col;
+                result[row][col] = 1;
+            }
+        }
+
+
         for (int[] row : result)
         {
             System.out.println(Arrays.toString(row));
@@ -182,8 +214,8 @@ public class NQueenProblem {
     // generates random lizard location
     int[] randomPositionGenerator() {
         // generate random numbers between 1 and size number
-        int row = (int )(Math.random() * (size-1) + 0);
-        int col = (int )(Math.random() * (size-1) + 0);
+        int row = (int)(Math.random() * (size));
+        int col = (int)(Math.random() * (size));
         return new int[] {row, col};
     }
 
@@ -191,7 +223,7 @@ public class NQueenProblem {
         // take our current board, take a random queen, make a single step.
         // need a list of lizards to track all lizards' locations
         // take a random lizard
-        changingLizard = (int)(Math.random() * (lizards-1));
+        changingLizard = (int)(Math.random() * (lizards));
         old_row = lizards_locations[changingLizard][0];
         old_col = lizards_locations[changingLizard][1];
 //        System.out.println("old_row: "+old_row+" old_col: "+old_col);
@@ -199,7 +231,6 @@ public class NQueenProblem {
         new_lizards_locations = deepCopy(lizards_locations);
 //        System.out.println("99");
         boolean repetitions = true;
-
         while (repetitions) {
             new_row = (int)(Math.random() * (size));
             new_col = (int)(Math.random() * (size));
@@ -207,7 +238,6 @@ public class NQueenProblem {
                 repetitions = false;
             }
         }
-
         new_lizards_locations[changingLizard][0] = new_row;
         new_lizards_locations[changingLizard][1] = new_col;
         lizards_locations = deepCopy(new_lizards_locations);
@@ -216,9 +246,9 @@ public class NQueenProblem {
     }
 
 
-
     boolean simulatedAnnealing() {
         randomPositionsGenerator();
+
         while (currentSystemTemperature > 0.1) {
             currConflicts = countConflicts(result);
             generateNeighbor();
@@ -231,12 +261,13 @@ public class NQueenProblem {
                 return true;
             }
             if (nextConflicts < currConflicts) {
-                currentSystemTemperature = currentSystemTemperature * 0.999;
+                currentSystemTemperature = currentSystemTemperature * 0.99;
             } else {
                 if (probability(currentSystemTemperature, (nextConflicts-currConflicts))) {
 //                    System.out.println("Head");
+                    currentSystemTemperature = currentSystemTemperature * 0.999999;
                 } else {
-                    System.out.println("Tail");
+//                    System.out.println("reject");
 //                    System.out.println("old_row: "+old_row+" old_col: "+old_col);
 //                    System.out.println("new_row: "+new_row+" new_col: "+new_col);
                     lizards_locations[changingLizard][0] = old_row;
@@ -249,7 +280,9 @@ public class NQueenProblem {
 //            {
 //                System.out.println(Arrays.toString(row));
 //            }
+
         }
+        currentSystemTemperature = 0;
         return true;
     }
 
@@ -289,10 +322,10 @@ public class NQueenProblem {
         }
 
         result = initial_map;
-        for (int[] row : initial_map)
-        {
-            System.out.println(Arrays.toString(row));
-        }
+//        for (int[] row : initial_map)
+//        {
+//            System.out.println(Arrays.toString(row));
+//        }
 
         System.out.println("____________________________");
 
@@ -303,6 +336,8 @@ public class NQueenProblem {
             lizards_locations = new int[lizards][2];
             hw.simulatedAnnealing();
             System.out.println("______________final______________");
+            System.out.println("conflicts: "+nextConflicts);
+
             for (int[] row : result)
             {
                 System.out.println(Arrays.toString(row));
