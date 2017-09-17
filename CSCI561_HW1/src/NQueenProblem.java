@@ -14,40 +14,16 @@ public class NQueenProblem {
 
     public static int line_number = 1;
     public static int[][] result;
-    public static int[][] neighbor;
-
+    public static int[][] backup;
     public static int[][] new_lizards_locations;
-
     public static int[][] lizards_locations;
     public static double currentSystemTemperature = 10.0;
-    public static double freezingTemperature = 0.0;
-    public static double currentStabilizer = 5.0;
-    public static double currentSystemEnergy = 0.0;
-    public static double coolingFactor = 0.05;
-    public static double stabilizingFactor = 1.08;
+    public static int currConflicts = 0;
+    public static int nextConflicts = 0;
 
 
-    class Root {
-        int[][] board;
-        private int depth;
-        private int length;
-        private int lizard_num;
+    public static int old_row, old_col, new_row, new_col, changingLizard;
 
-
-        // point initialized from parameters
-        Root(int[][] board, int depth, int length, int lizard_num) {
-            this.board = board;
-            this.depth = depth;
-            this.length = length;
-            this.lizard_num = lizard_num;
-        }
-
-        // accessor methods
-        public int[][] board() { return board; }
-        public int depth() { return depth; }
-        public int length() { return length; }
-        public int lizard_num() { return lizard_num; }
-    }
 
     int[][] deepCopy(int[][] A) {
         int[][] B = new int[A.length][A[0].length];
@@ -60,96 +36,6 @@ public class NQueenProblem {
         }
         return B;
     }
-
-
-    boolean isSafe(int[][] board, int y, int x) {
-        // up
-        for (int i = y; i >= 0; i--) {
-            if (board[i][x] == 1) {
-                return false;
-            }
-            if (board[i][x] == 2) {
-                break;
-            }
-        }
-
-        // down
-        for (int i = y; i != board.length; i++) {
-            if (board[i][x] == 1) {
-                return false;
-            }
-            if (board[i][x] == 2) {
-                break;
-            }
-        }
-
-        // left
-        for (int i = x; i >= 0; i--) {
-            if (board[y][i] == 1) {
-                return false;
-            }
-            if (board[y][i] == 2) {
-                break;
-            }
-        }
-
-        // right
-        for (int i = x; i != board.length; i++ ) {
-            if (board[y][i] == 1) {
-                return false;
-            }
-            if (board[y][i] == 2) {
-                break;
-            }
-
-        }
-
-        //left up
-        for (int i = 0; i <= Math.min(y,x); i++) {
-            if (board[y-i][x-i] == 1) {
-                return false;
-            }
-            if (board[y-i][x-i] == 2) {
-                break;
-            }
-        }
-
-        //left down
-        for (int i = 0; i!=Math.min(board.length-1-y,x)+1; i++) {
-            if (board[y+i][x-i] == 1) {
-                return false;
-            }
-            if (board[y+i][x-i] == 2) {
-                break;
-            }
-        }
-
-        //right up
-        for (int i = 0; i != Math.min(y, board[0].length -1 -x)+1; i++) {
-            if (board[y-i][x+i] == 1) {
-                return false;
-            }
-            if (board[y-i][x+i] == 2) {
-                break;
-            }
-        }
-
-        //right down
-        for (int i = 0; i!= Math.min(board.length-1-y, board[0].length-1-x)+1; i++) {
-            if (board[y+i][x+i] == 1) {
-                return false;
-            }
-            if (board[y+i][x+i] == 2) {
-                break;
-            }
-        }
-        return true;
-    }
-
-
-
-
-
 
     boolean conflict(int[][] board, int y, int x) {
         // up
@@ -241,7 +127,7 @@ public class NQueenProblem {
 
     // flip the coin function
     boolean probability(double temperature, double delta) {
-        System.out.println("6");
+//        System.out.println("6");
         if (delta < 0) {
             return true;
         }
@@ -255,30 +141,23 @@ public class NQueenProblem {
 
     // number of conflicts needs to be as small as possible
     int countConflicts(int [][] board) {
-        System.out.println("5");
+//        System.out.println("5");
         int conflicts = 0;
         for (int row = 0; row != board.length; row++) {
             for (int col = 0; col != board[row].length; col++) {
                 if (board[row][col] == 1) {
-//                    board[row][col] = 0;
                     if (!conflict(board, row, col)) {
-//                        System.out.println("conflicting row: "+row+" col: "+col+" safe: "+isSafe(board, row, col));
                         conflicts++;
-//                        board[row][col] = 1;
                     }
-//                    board[row][col] = 1;
                 }
             }
         }
-
-
-
         return conflicts;
     }
 
     // generates random lizard locations
     void randomPositionsGenerator() {
-        System.out.println("4");
+//        System.out.println("4");
         for (int i = 0; i < lizards; i++) {
             int row = 0;
             int col = 0;
@@ -298,7 +177,6 @@ public class NQueenProblem {
         {
             System.out.println(Arrays.toString(row));
         }
-
     }
 
     // generates random lizard location
@@ -309,113 +187,75 @@ public class NQueenProblem {
         return new int[] {row, col};
     }
 
-
-    int[][] generateNeighbor(int[][] board) {
+    void generateNeighbor() {
         // take our current board, take a random queen, make a single step.
         // need a list of lizards to track all lizards' locations
         // take a random lizard
-        int changingLizard = (int)(Math.random() * (lizards-1));
-        int old_row = lizards_locations[changingLizard][0];
-        int old_col = lizards_locations[changingLizard][1];
-        System.out.println("old_row: "+old_row+" old_col "+old_col);
+        changingLizard = (int)(Math.random() * (lizards-1));
+        old_row = lizards_locations[changingLizard][0];
+        old_col = lizards_locations[changingLizard][1];
+//        System.out.println("old_row: "+old_row+" old_col: "+old_col);
         // current lizards
         new_lizards_locations = deepCopy(lizards_locations);
-        int[][] nextBoard = deepCopy(board);
-        System.out.println("99");
+//        System.out.println("99");
         boolean repetitions = true;
+
         while (repetitions) {
-            int new_row = (int)(Math.random() * (size));
-            int new_col = (int)(Math.random() * (size));
-            if (board[new_row][new_col] == 0) {
-                new_lizards_locations[changingLizard][0] = new_row;
-                new_lizards_locations[changingLizard][1] = new_col;
-                lizards_locations = deepCopy(new_lizards_locations);
-                nextBoard[old_row][old_col] = 0;
-                nextBoard[new_row][new_col] = 1;
+            new_row = (int)(Math.random() * (size));
+            new_col = (int)(Math.random() * (size));
+            if (result[new_row][new_col] == 0) {
                 repetitions = false;
             }
         }
-        for (int[] row : lizards_locations)
-        {
-            System.out.println(Arrays.toString(row));
-        }
-        return nextBoard;
+
+        new_lizards_locations[changingLizard][0] = new_row;
+        new_lizards_locations[changingLizard][1] = new_col;
+        lizards_locations = deepCopy(new_lizards_locations);
+        result[new_row][new_col] = 1;
+        result[old_row][old_col] = 0;
     }
-//
-//    void acceptNext() {
-//        System.out.println("3");
-//        for (int row = 0; row != result.length; row++) {
-//            for (int col = 0; col != result[row].length; col++) {
-//                if (result[row][col] == 1) {
-//                    result[row][col] = 0;
-//                }
-//            }
-//        }
-////        System.out.println("size: "+new_lizards_locations.length);
-//        for (int i = 0; i < lizards; i++) {
-//            //lizards_locations[i] = new int[]{new_lizards_locations[i][0], new_lizards_locations[i][1]};
-////            result[lizards_locations[i][0]][lizards_locations[i][1]] = 0;
-//            result[new_lizards_locations[i][0]][new_lizards_locations[i][1]] = 1;
-//        }
-//    }
+
 
 
     boolean simulatedAnnealing() {
         randomPositionsGenerator();
-        while (currentSystemTemperature > 1) {
-            System.out.println(currentSystemTemperature);
-            int[][] neighbor = generateNeighbor(result);
-            int currConflicts = countConflicts(result);
-            int nextConflicts = countConflicts(neighbor);
+        while (currentSystemTemperature > 0.1) {
+            currConflicts = countConflicts(result);
+            generateNeighbor();
+            nextConflicts = countConflicts(result);
+//            System.out.println("next_conf: " + nextConflicts);
+//            System.out.println("curr_conf: " + currConflicts);
+//            System.out.println(currentSystemTemperature);
 
-            System.out.println("next_conf: "+nextConflicts);
-            System.out.println("curr_conf: "+currConflicts);
+            if (nextConflicts == 0) {
+                return true;
+            }
             if (nextConflicts < currConflicts) {
-                System.out.println("____________result1____________");
-                result = deepCopy(neighbor);
-                for (int[] row : result)
-                {
-                    System.out.println(Arrays.toString(row));
-                }
-
-
+                currentSystemTemperature = currentSystemTemperature * 0.999;
             } else {
-                if (probability(currentSystemTemperature, nextConflicts-currConflicts)) {
-                    result = deepCopy(neighbor);
-                    System.out.println("____________result2____________");
-                    for (int[] row : result)
-                    {
-                        System.out.println(Arrays.toString(row));
-                    }
-
+                if (probability(currentSystemTemperature, (nextConflicts-currConflicts))) {
+//                    System.out.println("Head");
+                } else {
+                    System.out.println("Tail");
+//                    System.out.println("old_row: "+old_row+" old_col: "+old_col);
+//                    System.out.println("new_row: "+new_row+" new_col: "+new_col);
+                    lizards_locations[changingLizard][0] = old_row;
+                    lizards_locations[changingLizard][1] = old_col;
+                    result[old_row][old_col] = 1;
+                    result[new_row][new_col] = 0;
                 }
             }
-
-            currentSystemTemperature -= 0.01;
+//            for (int[] row : result)
+//            {
+//                System.out.println(Arrays.toString(row));
+//            }
         }
         return true;
     }
 
-//
-//    simulated-annealing(initial solution)
-//    let solution be initial
-//    let t be an initial temperature
-//    until t is almost zero
-//          let neighbor be a random neighbor of solution
-//          if the cost of neighbor is less than the cost of solution
-//              let solution be neighbor
-//              stop if the cost is now 0
-//          otherwise
-//              let c be the cost increase
-//              compute p = e^(-c/t)
-//              with probability p, let solution be neighbor
-//          multiply t by a decay rate
-//     return solution
 
 
     public static void main(String args[]) throws IOException, InterruptedException {
-
-//        int[][] initial_map = new int[][];
         int[][] initial_map = new int[0][];
 
         try {
@@ -459,47 +299,14 @@ public class NQueenProblem {
         NQueenProblem hw = new NQueenProblem();
 
 
-
         if (method.equals("SA")) {
-//            result = hw.simulatedAnnealing();
             lizards_locations = new int[lizards][2];
-
-//            hw.randomPositionsGenerator();
-//            System.out.println("__________result_________");
-//            for (int[] row : result)
-//            {
-//                System.out.println(Arrays.toString(row));
-//            }
-//            System.out.println("Conf: "+hw.countConflicts(result));
-
-
-
             hw.simulatedAnnealing();
             System.out.println("______________final______________");
             for (int[] row : result)
             {
                 System.out.println(Arrays.toString(row));
             }
-//
-//            nextBoard = hw.generateNeighbor(result);
-
-
-
-
-//            int conf = hw.countConflicts(result);
-//            System.out.println("conf: "+conf);
-//            System.out.println("____________result___________");
-//            for (int[] row : result)
-//            {
-//                System.out.println(Arrays.toString(row));
-//            }
-
-
-
-
-
-
-
         }
 
         try{
