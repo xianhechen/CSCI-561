@@ -75,7 +75,6 @@ public class homework {
                 success = true;
                 return curr_root.lizards_positions();
             }
-            System.out.println(l);
             if (d < result.length) {
                 for (int i = 0; i < result[0].length; i++) {
                     Stack<int[]> new_p = new Stack<>();
@@ -88,25 +87,15 @@ public class homework {
                         new_p.push(new int[]{d, i});
                         Root temp_root = new Root(new_p, d + 1, w, l + 1);
                         stack.push(temp_root);
+
                     }
-                    changeBoard(new_p, 0);
-                }
-                for (int i = 0; i < result[0].length; i++) {
-                    Stack<int[]> new_p = new Stack<>();
-                    for (Iterator iterator = p.iterator(); iterator.hasNext();) {
-                        int[] loc = (int[]) iterator.next();
-                        new_p.push(loc);
-                    }
-                    changeBoard(new_p, 1);
-                    if (result[d][result.length-1-i] == 0 && isSafe(result, d, result.length-1-i)) {
-                        new_p.push(new int[]{d, result.length-1-i});
-                        Root temp_root = new Root(new_p, d + 1, w, l + 1);
+                    if (i == result[0].length-1 && p.size() != l+1) {
+                        Root temp_root = new Root(new_p, d + 1, w, l);
                         stack.push(temp_root);
                     }
                     changeBoard(new_p, 0);
                 }
             }
-            // left to right
             if (w < result[0].length) {
                 for (int i = 0; i < result.length; i++) {
                     Stack<int[]> new_p = new Stack<>();
@@ -120,19 +109,8 @@ public class homework {
                         Root temp_root = new Root(new_p, d, w+1, l + 1);
                         stack.push(temp_root);
                     }
-                    changeBoard(new_p, 0);
-                }
-                for (int i = 0; i < result.length; i++) {
-                    Stack<int[]> new_p = new Stack<>();
-                    for (Iterator iterator = p.iterator(); iterator.hasNext();) {
-                        int[] loc = (int[]) iterator.next();
-                        new_p.push(loc);
-                    }
-                    changeBoard(new_p, 1);
-                    if (result[result[0].length-1-i][w] == 0 && isSafe(result, result[0].length-1-i, w)) {
-                        new_p.push(new int[]{result[0].length-1-i,w});
-
-                        Root temp_root = new Root(new_p, d, w+1, l + 1);
+                    if (i == result.length-1 && p.size() != l+1) {
+                        Root temp_root = new Root(new_p, d , w+1, l);
                         stack.push(temp_root);
                     }
                     changeBoard(new_p, 0);
@@ -159,7 +137,6 @@ public class homework {
                 success = true;
                 return curr_root.lizards_positions();
             }
-            System.out.println(l);
             if (d < result.length) {
                 for (int i = 0; i < result[0].length; i++) {
                     Stack<int[]> new_p = new Stack<>();
@@ -173,25 +150,13 @@ public class homework {
                         Root temp_root = new Root(new_p, d + 1, w, l + 1);
                         queue.enqueue(temp_root);
                     }
-                    changeBoard(new_p, 0);
-                }
-                for (int i = 0; i < result[0].length; i++) {
-                    Stack<int[]> new_p = new Stack<>();
-                    for (Iterator iterator = p.iterator(); iterator.hasNext();) {
-                        int[] loc = (int[]) iterator.next();
-                        new_p.push(loc);
-                    }
-                    changeBoard(new_p, 1);
-                    if (result[d][result.length-1-i] == 0 && isSafe(result, d, result.length-1-i)) {
-//                        result[d][result.length-1-i] = 1;
-                        new_p.push(new int[]{d, result.length-1-i});
-                        Root temp_root = new Root(new_p, d + 1, w, l + 1);
+                    if (i == result.length-1 && p.size() != l+1) {
+                        Root temp_root = new Root(new_p, d + 1, w, l);
                         queue.enqueue(temp_root);
                     }
                     changeBoard(new_p, 0);
                 }
             }
-            // left to right
             if (w < result[0].length) {
                 for (int i = 0; i < result.length; i++) {
                     Stack<int[]> new_p = new Stack<>();
@@ -205,19 +170,8 @@ public class homework {
                         Root temp_root = new Root(new_p, d, w+1, l + 1);
                         queue.enqueue(temp_root);
                     }
-                    changeBoard(new_p, 0);
-                }
-                for (int i = 0; i < result.length; i++) {
-                    Stack<int[]> new_p = new Stack<>();
-                    for (Iterator iterator = p.iterator(); iterator.hasNext();) {
-                        int[] loc = (int[]) iterator.next();
-                        new_p.push(loc);
-                    }
-                    changeBoard(new_p, 1);
-                    if (result[result[0].length-1-i][w] == 0 && isSafe(result, result[0].length-1-i, w)) {
-                        new_p.push(new int[]{result[0].length-1-i,w});
-
-                        Root temp_root = new Root(new_p, d, w+1, l + 1);
+                    if (i == result[0].length-1 && p.size() != l+1) {
+                        Root temp_root = new Root(new_p, d , w+1, l);
                         queue.enqueue(temp_root);
                     }
                     changeBoard(new_p, 0);
@@ -403,14 +357,15 @@ public class homework {
         result[old_row][old_col] = 0;
     }
 
-
     boolean simulatedAnnealing() {
         randomPositionsGenerator();
+        success = false;
         while (currentSystemTemperature > 0.1) {
             int currConflicts = countConflicts(result);
             generateNeighbor();
             nextConflicts = countConflicts(result);
             if (nextConflicts == 0) {
+                success = true;
                 return true;
             }
             if (nextConflicts < currConflicts) {
@@ -436,7 +391,6 @@ public class homework {
             BufferedReader in = new BufferedReader(new FileReader("input.txt"));
             String str;
             while ((str = in.readLine()) != null) {
-
                 if (line_number == 1) {
                     method = str;
                 }
@@ -476,56 +430,36 @@ public class homework {
         homework hw = new homework();
         if (method.equals("BFS")) {
             if ( trees == 0 && size < lizards) {
-
             } else if (available_space > lizards) { // run for 5 min
-//                final Timer timer = new Timer();
-//                // Note that timer has been declared final, to allow use in anon. class below
-//                timer.schedule( new TimerTask() {
-//                        private int i = 10;
-//                        public void run()
-//                        {
-//                            System.out.println("3 Seconds Later");
-//                            if (--i < 1) timer.cancel(); // Count down ten times, then cancel
-//                        }
-//                    }, 3000 //Note the second argument for repetition
-//                );
-
-
-
-//                Stack<int[]> locations = hw.bfs(0,0,0);
-//                for (Iterator iterator = locations.iterator(); iterator.hasNext();) {
-//                    int[] loc = (int[]) iterator.next();
-//                    result[loc[0]][loc[1]] = 1;
-//                }
-//                for (int[] row : result)
-//                {
-//                    System.out.println(Arrays.toString(row));
-//                }
+                Stack<int[]> locations = hw.bfs(0,0,0);
+                for (Iterator iterator = locations.iterator(); iterator.hasNext();) {
+                    int[] loc = (int[]) iterator.next();
+                    result[loc[0]][loc[1]] = 1;
+                }
+                for (int[] row : result)
+                {
+                    System.out.println(Arrays.toString(row));
+                }
             } else {
-
             }
         }
         else if (method.equals("DFS")) {
             if ( trees == 0 && size < lizards) {
-
             } else if (available_space > lizards) { // run for 5 min
                 Stack<int[]> locations = hw.dfs(0,0,0);
                 for (Iterator iterator = locations.iterator(); iterator.hasNext();) {
                     int[] loc = (int[]) iterator.next();
                     result[loc[0]][loc[1]] = 1;
                 }
-
                 for (int[] row : result)
                 {
                     System.out.println(Arrays.toString(row));
                 }
             } else {
-
             }
         }
         else if (method.equals("SA")) {
             if ( trees == 0 && size < lizards) {
-
             } else if (available_space > lizards) {
                 lizards_locations = new int[lizards][2];
                 hw.simulatedAnnealing();
@@ -535,15 +469,14 @@ public class homework {
                     System.out.println(Arrays.toString(row));
                 }
             } else {
-
             }
         }
         try {
             PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
             if ( trees == 0 && size < lizards) {
+            } else if (success == false) {
                 writer.println("FAIL");
-            }
-            else if (success == true && available_space > lizards) {
+            } else if (success == true && available_space > lizards) {
                 writer.println("OK");
                 for (int[] row : result)
                 {
